@@ -1,5 +1,5 @@
 - name: "Upgrade system dependencies"
-  hosts: picluster
+  hosts: "{{ target_hosts }}"
   become: yes
   tasks:
     - name: "Upgrade dependencies"
