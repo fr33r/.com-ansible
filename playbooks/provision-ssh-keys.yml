@@ -1,25 +1,22 @@
- #!/usr/bin/env ansible-playbook
- ---
- # inspiration from: https://www.linder.org/2020/01/16/automating-ssh-keys-with-ansible/
-   name: "Provision and distribute SSH keys"
-   hosts: picluster
-   vars_prompt:
-     - name: target_user
-       prompt: What is the username on the target machine(s) receiving the key?
-     - name: key_algo
-       prompt: Which algorithm would you like to use to generate the key?
-       default: 'ed25519'
-   tasks:
-     - name: "Create SSH key"
-       # https://docs.ansible.com/ansible/latest/collections/community/crypto/openssh_keypair_module.html
-       openssh_keypair:
-         path: "{{ lookup('env', 'HOME') + '/.ssh/id_ed25519' }}"
-         type: "{{ key_algo }}"
-         delegate_to: localhost
-         run_once: true
-     - name: "Copy key"
-       # https://docs.ansible.com/ansible/latest/collections/ansible/posix/authorized_key_module.html
-       authorized_key:
-         user: "{{ target_user }}"
-         state: present
-         key: "{{ lookup('file', target_user + '/.ssh/id_ed25519.pub') }}"
+- name: "Provision and distribute SSH keys"
+  hosts: picluster
+  vars_prompt:
+    - name: target_user
+      prompt: What is the username on the target machine(s) receiving the key?
+    - name: key_algo
+      prompt: Which algorithm would you like to use to generate the key?
+      default: 'ed25519'
+  tasks:
+    - name: "Create SSH key"
+      # https://docs.ansible.com/ansible/latest/collections/community/crypto/openssh_keypair_module.html
+      openssh_keypair:
+        path: "{{ lookup('env', 'HOME') + '/.ssh/id_ed25519' }}"
+        type: "{{ key_algo }}"
+      delegate_to: localhost
+      run_once: true
+    - name: "Copy key"
+      # https://docs.ansible.com/ansible/latest/collections/ansible/posix/authorized_key_module.html
+      authorized_key:
+        user: "{{ target_user }}"
+        state: present
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_ed25519.pub') }}"
