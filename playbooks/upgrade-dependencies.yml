@@ -1,0 +1,10 @@
+- name: "Upgrade system dependencies"
+  hosts: picluster
+  become: yes
+  tasks:
+    - name: "Upgrade dependencies"
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+      apt:
+        update_cache: true
+        upgrade: "yes"
+
