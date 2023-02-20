@@ -1,0 +1,38 @@
+- name: "Install Docker"
+  hosts: "{{ target_hosts }}"
+  vars_prompt:
+    - name: target_user
+      prompt: What is the username on the target machine(s) installing docker?
+  tasks:
+    - name: "Download Docker install script"
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/get_url_module.html
+      get_url:
+        url: "https://get.docker.com"
+        dest: "{{ '/home/' + target_user + '/get-docker.sh' }}"
+    - name: "Install Docker"
+      become: true
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/shell_module.html
+      shell:
+        chdir: "{{ '/home/' + target_user }}"
+        cmd: "sudo sh get-docker.sh"
+    - name: "Create daemon configuration"
+      become: true
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html#ansible-collections-ansible-builtin-template-module
+      template:
+        src: "../templates/docker-daemon-configuration.j2"
+        dest: "/etc/docker/daemon.json"
+        mode: "644"
+        owner: "root"
+        group: "root"
+    - name: "Restart service"
+      become: true
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html
+      systemd:
+        name: docker
+        state: restarted # always restarts service when ran!
+    - name: "Remove install script"
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+      file:
+        path: "{{ '/home/' + target_user + '/get-docker.sh' }}"
+        state: absent
+
