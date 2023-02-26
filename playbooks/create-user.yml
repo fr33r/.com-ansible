@@ -1,0 +1,34 @@
+- name: "Create new user"
+  hosts: "{{ target_hosts }}"
+  vars_prompt:
+    - name: username
+      prompt: What is the desired username?
+    - name: system_user
+      prompt: Should this be a system user?
+      default: "no"
+    - name: uid
+      prompt: What is the desired UID for the user?
+    - name: gid
+      prompt: what is the desired GID for the users primary group?
+    - name: password
+      prompt: what is the desired password?
+  tasks:
+    - name: "Create primary group"
+      become: true
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/group_module.html
+      group:
+        name: "{{ username }}"
+        system: "{{ system_user }}"
+        gid: "{{ gid }}"
+    - name: "Create user"
+      become: true
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html
+      user:
+        name: "{{ username }}"
+        system: "{{ system_user }}"
+        uid: "{{ uid }}"
+        group: "{{ username }}"
+        # https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module
+        # https://docs.ansible.com/ansible/devel/collections/ansible/builtin/password_hash_filter.html
+        password: "{{ password | password_hash(hashtype='sha512') }}"
+
