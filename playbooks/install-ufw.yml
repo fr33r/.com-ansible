@@ -1,32 +1,28 @@
 - name: "Install 'ufw'"
   hosts: "{{ target_hosts }}"
+  become: true
   tasks:
     - name: "Install 'ufw' package"
-      become: true
       # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
       apt:
         name: ufw
         update_cache: yes
         state: latest
     - name: "Enable logging"
-      become: true
       # https://docs.ansible.com/ansible/2.9/modules/ufw_module.html
       ufw:
         logging: on
     - name: "Allow 'ssh' traffic"
-      become: true
       # https://docs.ansible.com/ansible/2.9/modules/ufw_module.html
       ufw:
         rule: allow
         port: 22
         proto: tcp
     - name: "Reload 'ufw'"
-      become: true
       # https://docs.ansible.com/ansible/2.9/modules/ufw_module.html
       ufw:
         state: reloaded 
     - name: "Enable 'ufw'"
-      become: true
       # https://docs.ansible.com/ansible/2.9/modules/ufw_module.html
       ufw:
         state: enabled
