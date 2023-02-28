@@ -1,0 +1,27 @@
+- name: "Add Docker Swarm service 'ufw' rules"
+  hosts: "{{ target_hosts }}"
+  become: true
+  tasks:
+    - name: "Allow TCP traffic on port 9000"
+      # https://docs.ansible.com/ansible/2.9/modules/ufw_module.html
+      ufw:
+        rule: allow
+        port: 9000
+        proto: tcp
+    - name: "Allow TCP traffic on port 80"
+      # https://docs.ansible.com/ansible/2.9/modules/ufw_module.html
+      ufw:
+        rule: allow
+        port: 80 
+        proto: tcp
+    - name: "Allow TCP traffic on port 443"
+      # https://docs.ansible.com/ansible/2.9/modules/ufw_module.html
+      ufw:
+        rule: allow
+        port: 443 
+        proto: tcp
+    - name: "Reload 'ufw'"
+      # https://docs.ansible.com/ansible/2.9/modules/ufw_module.html
+      ufw:
+        state: reloaded
+
