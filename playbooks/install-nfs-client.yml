@@ -1,0 +1,20 @@
+- name: "Install NFS Client"
+  hosts: "{{ target_hosts }}"
+  become: true
+  tasks:
+    - name: "Install 'nfs-common' package"
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+      apt:
+        name: nfs-common
+        update_cache: yes
+        state: latest
+    - name: "Indicate the client should start on boot"
+      # https://docs.ansible.com/ansible/5/collections/ansible/builtin/systemd_module.html
+      systemd:
+        name: nfs-client.target
+        enabled: yes
+    - name: "Start the client"
+      # https://docs.ansible.com/ansible/5/collections/ansible/builtin/systemd_module.html
+      systemd:
+        name: nfs-client.target
+        state: started
